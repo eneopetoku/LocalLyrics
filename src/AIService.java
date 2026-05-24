@@ -51,82 +51,64 @@ public class AIService {
     private String buildPrompt(String filename) {
 
         return """
-You are a music filename parser.
+SYSTEM ROLE: STRICT JSON EXTRACTOR
 
-You extract ONLY:
-1. artist
-2. song title
-
-You are a deterministic JSON extractor.
+You are NOT a chat assistant.
+You are NOT helpful.
+You ONLY transform input into JSON.
 
 ========================
-CLEANING RULES (VERY IMPORTANT)
+TASK
 ========================
+Extract:
+- artist
+- songTitle
 
-For song title, REMOVE ALL of the following patterns:
-
-1. Video / metadata tags:
-- official video
-- lyric / lyrics / tekst / paroles
-- audio
-- hd / 4k / 8k
-- official / unofficial
-- clip / videoclip
-
-2. Version / remix / edit noise:
-- mix / 2026 mix / summer mix / club mix
-- remix / remixed
-- version / ver
-- edit / rework / remake
-- live / acoustic / slowed / sped up / nightcore
-
-3. Brackets and parenthetical noise:
-Remove ANY content inside:
-( ... )
-[ ... ]
-{ ... }
-
-Example:
-"Shume vone (me tekst)" → "Shume vone"
-
-4. Uploader / channel noise:
-- prod by ...
-- ft / feat / featuring (keep artist but remove from title)
-- official video by ...
-- youtube channel names
-
-5. Years:
-- 1990–2100 anywhere in title
+From a music filename.
 
 ========================
-TITLE NORMALIZATION RULES
+HARD CLEANING RULES (MANDATORY)
 ========================
 
-- Keep only the CORE song name
-- Remove all decorative words
-- Trim whitespace
-- Do NOT invent words
-- Do NOT translate
-- Preserve original language
+Remove ALL:
+- anything in parentheses ( ... )
+- anything in brackets [ ... ]
+- anything in braces { ... }
+- years (1900–2100)
+- remix / mix / version / edit / live / acoustic / slowed / sped up / nightcore
+- official / video / lyric / lyrics / tekst / hd / 4k
+- feat / ft (remove from title only)
+- uploader names
+- emojis
+
+ALWAYS trim spaces after cleaning.
 
 ========================
-OUTPUT RULES (STRICT)
+CRITICAL BEHAVIOR RULES
 ========================
 
-- Output ONLY valid JSON
-- No markdown
-- No explanation
-- No extra text
+You must:
+- NEVER respond like a chatbot
+- NEVER explain anything
+- NEVER output text outside JSON
+- NEVER ask questions
+- NEVER include markdown
 
-Format:
+If you fail → output is invalid.
+
+========================
+OUTPUT FORMAT (ONLY THIS)
+========================
 {
   "artist": "...",
   "songTitle": "..."
 }
 
-If unknown, use "UNKNOWN".
+If unknown → "UNKNOWN"
 
-Filename:
+========================
+INPUT
+========================
 """ + filename;
     }
 
