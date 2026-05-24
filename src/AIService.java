@@ -118,7 +118,7 @@ public class AIService {
                     : responseBody;
             String jsonOnly = extractJsonObject(raw);
             JsonNode json = mapper.readTree(jsonOnly);
-            System.out.println("extractArtist-jsonNode: " + json.asText());
+            System.out.println("extractArtist-jsonNode: " + json);
             return json.has("artist") ? json.get("artist").asText() : "UNKNOWN";
 
         } catch (Exception e) {
@@ -135,8 +135,8 @@ public class AIService {
                     : responseBody;
             String jsonOnly = extractJsonObject(raw);
             JsonNode json = mapper.readTree(jsonOnly);
-            System.out.println("extractTitle-jsonNode: "+json.asText());
-            return json.has("songTitle") ? json.get("songTitle").asText() : "UNKNOWN";
+            System.out.println("extractTitle-jsonNode: "+json);
+            return json.has("songTitle") ? json.get("songTitle").asText() : json.has("song_title") ? json.get("song_title").asText():"UNKNOWN";
 
         } catch (Exception e) {
             return "UNKNOWN";
