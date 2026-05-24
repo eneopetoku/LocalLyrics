@@ -116,8 +116,9 @@ public class AIService {
             String raw = root.has("response")
                     ? root.get("response").asText()
                     : responseBody;
-
-            JsonNode json = mapper.readTree(raw);
+            String jsonOnly = extractJsonObject(raw);
+            JsonNode json = mapper.readTree(jsonOnly);
+            System.out.println("extractArtist-jsonNode: " + json.asText());
             return json.has("artist") ? json.get("artist").asText() : "UNKNOWN";
 
         } catch (Exception e) {
@@ -132,12 +133,23 @@ public class AIService {
             String raw = root.has("response")
                     ? root.get("response").asText()
                     : responseBody;
-
-            JsonNode json = mapper.readTree(raw);
+            String jsonOnly = extractJsonObject(raw);
+            JsonNode json = mapper.readTree(jsonOnly;
+            System.out.println("extractTitle-jsonNode: "+json.asText());
             return json.has("songTitle") ? json.get("songTitle").asText() : "UNKNOWN";
 
         } catch (Exception e) {
             return "UNKNOWN";
         }
+    }
+    private String extractJsonObject(String text) throws Exception {
+        int start = text.indexOf('{');
+        int end = text.lastIndexOf('}');
+
+        if (start == -1 || end == -1 || end <= start) {
+            throw new IllegalArgumentException("No JSON found in response");
+        }
+
+        return text.substring(start, end + 1);
     }
 }
