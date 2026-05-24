@@ -1,3 +1,7 @@
 out/
 .idea/
 *.class
+music.db
+
+# Maven
+target/
