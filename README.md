@@ -6,21 +6,21 @@ LocalLyrics is a lightweight tool that scans a folder of music files, extracts a
 
 ✨ Overview
 
-The goal of LocalLyrics is to automate the process of retrieving lyrics for a local music library by:
+* The goal of LocalLyrics is to automate the process of retrieving lyrics for a local music library by:
 
-Reading music files from a selected folder
+* Reading music files from a selected folder
 
-Extracting artist and song title from filenames
+* Extracting artist and song title from filenames
 
-Querying an online lyrics source
+* Querying an online lyrics source
 
-Saving lyrics locally for later use
+* Saving lyrics locally for later use
 
 🧠 How It Works
 
-The program scans a given music directory
+* The program scans a given music directory
 
-It reads each file and extracts a best-guess of:
+* It reads each file and extracts a best-guess of:
 
 Artist name
 
@@ -52,33 +52,33 @@ Lyrics: saved locally
 
 🚀 Current Status
 
-Basic filename parsing is being implemented
+* Basic filename parsing is being implemented
 
-Lyrics fetching logic is in progress
+* Lyrics fetching logic is in progress
 
-File processing is designed for single-folder scanning
+* File processing is designed for single-folder scanning
 
 🔧 Future Ideas
 
 These may or may not be implemented:
 
-Better metadata extraction from audio files
+* Better metadata extraction from audio files
 
-Improved filename parsing accuracy
+* Improved filename parsing accuracy
 
-Support for processing multiple folders recursively
+* Support for processing multiple folders recursively
 
-Caching lyrics to avoid repeated downloads
+* Caching lyrics to avoid repeated downloads
 
-Simple CLI improvements or configuration options
+* Simple CLI improvements or configuration options
 
 ⚠️ Notes
 
-Accuracy depends heavily on how well filenames are formatted
+* Accuracy depends heavily on how well filenames are formatted
 
-Some songs may not match correctly if naming is inconsistent
+* Some songs may not match correctly if naming is inconsistent
 
-Lyrics availability depends on external sources
+* Lyrics availability depends on external sources
 
 📌 Status
 
