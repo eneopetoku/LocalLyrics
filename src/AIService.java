@@ -134,7 +134,7 @@ public class AIService {
                     : responseBody;
 
             JsonNode json = mapper.readTree(raw);
-            return json.has("title") ? json.get("title").asText() : "UNKNOWN";
+            return json.has("songTitle") ? json.get("songTitle").asText() : "UNKNOWN";
 
         } catch (Exception e) {
             return "UNKNOWN";
