@@ -134,7 +134,7 @@ public class AIService {
                     ? root.get("response").asText()
                     : responseBody;
             String jsonOnly = extractJsonObject(raw);
-            JsonNode json = mapper.readTree(jsonOnly;
+            JsonNode json = mapper.readTree(jsonOnly);
             System.out.println("extractTitle-jsonNode: "+json.asText());
             return json.has("songTitle") ? json.get("songTitle").asText() : "UNKNOWN";
 
