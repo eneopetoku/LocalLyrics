@@ -50,42 +50,84 @@ public class AIService {
 
     private String buildPrompt(String filename) {
 
-        // IMPORTANT: keep prompt SIMPLE (no nested JSON, no heavy escaping)
         return """
-                You are a music filename parser.
-                
-                        Extract ONLY:
-                        1. artist
-                        2. song title
-                
-                        Ignore:
-                        - file extensions
-                        - "official video"
-                        - "lyrics"
-                        - "HD"
-                        - "feat"
-                        - uploader names
-                        - years
-                        - emojis
-                        - extra tags
-                
-          You are a deterministic JSON extractor.
-                
-                  You are NOT an assistant.
-                
-                  You MUST output ONLY valid JSON.
-                  No text before or after.
-                  No markdown.
-                  No explanation.
-                  No greetings.
-                
-                  If input is ambiguous, still output best guess JSON only.
-                
-                  Output rule: the first character must be { and the last must be }
-                        Anything else = failure.
-                        
-           Filename:
-        """+ filename;
+You are a music filename parser.
+
+You extract ONLY:
+1. artist
+2. song title
+
+You are a deterministic JSON extractor.
+
+========================
+CLEANING RULES (VERY IMPORTANT)
+========================
+
+For song title, REMOVE ALL of the following patterns:
+
+1. Video / metadata tags:
+- official video
+- lyric / lyrics / tekst / paroles
+- audio
+- hd / 4k / 8k
+- official / unofficial
+- clip / videoclip
+
+2. Version / remix / edit noise:
+- mix / 2026 mix / summer mix / club mix
+- remix / remixed
+- version / ver
+- edit / rework / remake
+- live / acoustic / slowed / sped up / nightcore
+
+3. Brackets and parenthetical noise:
+Remove ANY content inside:
+( ... )
+[ ... ]
+{ ... }
+
+Example:
+"Shume vone (me tekst)" → "Shume vone"
+
+4. Uploader / channel noise:
+- prod by ...
+- ft / feat / featuring (keep artist but remove from title)
+- official video by ...
+- youtube channel names
+
+5. Years:
+- 1990–2100 anywhere in title
+
+========================
+TITLE NORMALIZATION RULES
+========================
+
+- Keep only the CORE song name
+- Remove all decorative words
+- Trim whitespace
+- Do NOT invent words
+- Do NOT translate
+- Preserve original language
+
+========================
+OUTPUT RULES (STRICT)
+========================
+
+- Output ONLY valid JSON
+- No markdown
+- No explanation
+- No extra text
+
+Format:
+{
+  "artist": "...",
+  "songTitle": "..."
+}
+
+If unknown, use "UNKNOWN".
+
+Filename:
+""" + filename;
     }
 
     private String buildRequestJson(String prompt) {
