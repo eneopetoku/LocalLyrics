@@ -2,6 +2,8 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
 
 public class AIService {
 
@@ -10,7 +12,7 @@ public class AIService {
 
     private final HttpClient client = HttpClient.newHttpClient();
 
-    public String extractMetadata(String filename) {
+    public SongMetadata extractMetadata(String filename) {
 
         try {
             String prompt = buildPrompt(filename);
@@ -30,11 +32,19 @@ public class AIService {
             System.out.println("OLLAMA RESPONSE:");
             System.out.println(response.body());
 
-            return response.body();
+            String result = response.body();
+            SongMetadata metadata = new SongMetadata();
+            metadata.setArtist(extractArtist(result));
+            metadata.setTitle(extractTitle(result));
+
+            return metadata;
+
 
         } catch (Exception e) {
             e.printStackTrace();
-            return "ERROR";
+
+            // IMPORTANT FIX: return valid object, not String
+            return new SongMetadata("UNKNOWN", "UNKNOWN");
         }
     }
 
@@ -59,14 +69,23 @@ public class AIService {
                         - emojis
                         - extra tags
                 
-                        Return the result STRICTLY in this format:
+          You are a deterministic JSON extractor.
                 
-                        ARTIST: <artist>
-                        TITLE: <title>
+                  You are NOT an assistant.
                 
-                        Filename:
+                  You MUST output ONLY valid JSON.
+                  No text before or after.
+                  No markdown.
+                  No explanation.
+                  No greetings.
                 
-        """ + filename;
+                  If input is ambiguous, still output best guess JSON only.
+                
+                  Output rule: the first character must be { and the last must be }
+                        Anything else = failure.
+                        
+           Filename:
+        """+ filename;
     }
 
     private String buildRequestJson(String prompt) {
@@ -84,5 +103,41 @@ public class AIService {
           "stream": false
         }
         """.formatted(MODEL, safePrompt);
+    }
+
+    private final ObjectMapper mapper = new ObjectMapper();
+
+    private String extractArtist(String responseBody) {
+        try {
+            // Ollama often wraps output like:
+            // { "response": "{...json...}" }
+            JsonNode root = mapper.readTree(responseBody);
+
+            String raw = root.has("response")
+                    ? root.get("response").asText()
+                    : responseBody;
+
+            JsonNode json = mapper.readTree(raw);
+            return json.has("artist") ? json.get("artist").asText() : "UNKNOWN";
+
+        } catch (Exception e) {
+            return "UNKNOWN";
+        }
+    }
+
+    private String extractTitle(String responseBody) {
+        try {
+            JsonNode root = mapper.readTree(responseBody);
+
+            String raw = root.has("response")
+                    ? root.get("response").asText()
+                    : responseBody;
+
+            JsonNode json = mapper.readTree(raw);
+            return json.has("title") ? json.get("title").asText() : "UNKNOWN";
+
+        } catch (Exception e) {
+            return "UNKNOWN";
+        }
     }
 }
