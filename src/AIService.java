@@ -51,64 +51,41 @@ public class AIService {
     private String buildPrompt(String filename) {
 
         return """
-SYSTEM ROLE: STRICT JSON EXTRACTOR
+You are a music filename parser.
 
-You are NOT a chat assistant.
-You are NOT helpful.
-You ONLY transform input into JSON.
+Extract ONLY:
+1. artist
+2. song title
 
-========================
-TASK
-========================
-Extract:
-- artist
-- songTitle
-
-From a music filename.
-
-========================
-HARD CLEANING RULES (MANDATORY)
-========================
-
-Remove ALL:
-- anything in parentheses ( ... )
-- anything in brackets [ ... ]
-- anything in braces { ... }
-- years (1900–2100)
-- remix / mix / version / edit / live / acoustic / slowed / sped up / nightcore
-- official / video / lyric / lyrics / tekst / hd / 4k
-- feat / ft (remove from title only)
+Ignore:
+- file extensions
+- "official video"
+- "lyrics"
+- "HD"
+- "feat"
 - uploader names
+- years
 - emojis
+- extra tags
+- ANY text inside parentheses ( ... )
+- ANY text inside brackets [ ... ]
+- ANY text inside braces { ... }
 
-ALWAYS trim spaces after cleaning.
+You are a deterministic JSON extractor.
 
-========================
-CRITICAL BEHAVIOR RULES
-========================
+You are NOT an assistant.
 
-You must:
-- NEVER respond like a chatbot
-- NEVER explain anything
-- NEVER output text outside JSON
-- NEVER ask questions
-- NEVER include markdown
+You MUST output ONLY valid JSON.
+No text before or after.
+No markdown.
+No explanation.
+No greetings.
 
-If you fail → output is invalid.
+If input is ambiguous, still output best guess JSON only.
 
-========================
-OUTPUT FORMAT (ONLY THIS)
-========================
-{
-  "artist": "...",
-  "songTitle": "..."
-}
+Output rule: the first character must be { and the last must be }
 
-If unknown → "UNKNOWN"
-
-========================
-INPUT
-========================
+Filename:
 """ + filename;
     }
 
