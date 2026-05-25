@@ -4,6 +4,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.io.IOException;
+
 public class SongRepository {
 
     public static void insertOrUpdate(String filename, String artist, String title) {
@@ -85,5 +91,36 @@ public class SongRepository {
         }
 
         return false;
+    }
+    public static void saveLyrics(String filename, String lyrics) {
+
+        try {
+            // ensure folder exists
+            Files.createDirectories(Paths.get("lyrics"));
+
+            // convert .mp3 → .txt
+            String baseName;
+
+            int dotIndex = filename.lastIndexOf(".");
+            if (dotIndex == -1) {
+                baseName = filename;
+            } else {
+                baseName = filename.substring(0, dotIndex);
+            }
+
+            String lyricsFilename = baseName + ".txt";
+
+            Path filePath = Paths.get("lyrics", lyricsFilename);
+
+            Files.writeString(
+                    filePath,
+                    lyrics,
+                    StandardOpenOption.CREATE,
+                    StandardOpenOption.TRUNCATE_EXISTING
+            );
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

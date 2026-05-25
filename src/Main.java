@@ -1,3 +1,5 @@
+import java.util.List;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -45,9 +47,44 @@ public class Main {
             }
 
             // 4. Lyrics stage (future use)
+            List<LyricsProvider> providers = List.of(
+                    new TeksteshqipProvider()
+
+            );
+
             if (!SongRepository.isDownloaded(filename)) {
                 System.out.println("Lyrics not downloaded yet → ready for next step");
-                // TODO: fetch lyrics here later
+                String lyrics = null;
+                String usedProvider = null;
+
+                for (LyricsProvider provider : providers) {
+
+                    System.out.println("Trying provider: " + provider.getProviderName());
+
+                    try {
+                        lyrics = provider.getLyrics(artist, title);
+
+                        if (lyrics != null && !lyrics.isEmpty()) {
+                            usedProvider = provider.getProviderName();
+                            break;
+                        }
+
+                    } catch (Exception e) {
+                        System.out.println("Provider failed: " + provider.getProviderName());
+                    }
+                }
+
+                if (lyrics != null && !lyrics.isEmpty()) {
+
+                    SongRepository.saveLyrics(filename, lyrics);
+                    SongRepository.markDownloaded(filename);
+
+                    System.out.println("Lyrics downloaded successfully using: " + usedProvider);
+
+                } else {
+                    System.out.println("All providers failed ❌");
+                }
+
             } else {
                 System.out.println("Lyrics already downloaded");
             }

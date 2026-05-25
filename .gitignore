@@ -5,3 +5,6 @@ music.db
 
 # Maven
 target/
+
+# Lyrics output folder
+lyrics/
