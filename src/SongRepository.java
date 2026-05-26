@@ -92,6 +92,33 @@ public class SongRepository {
 
         return false;
     }
+
+    public static SongMetadata getMetadata(String filename) {
+
+        String sql = "SELECT artist, title FROM songs WHERE filename = ?";
+
+        try (Connection conn = Database.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, filename);
+
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+
+                String artist = rs.getString("artist");
+                String title = rs.getString("title");
+
+                return new SongMetadata(artist, title);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     public static void saveLyrics(String filename, String lyrics) {
 
         try {

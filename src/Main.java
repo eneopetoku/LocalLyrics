@@ -1,4 +1,3 @@
-import java.util.List;
 
 public class Main {
 
@@ -12,82 +11,14 @@ public class Main {
 
         FileScanner scanner = new FileScanner();
         AIService aiService = new AIService();
-
+        LyricsService lyricsService = new LyricsService(aiService);
+        
         scanner.scan(folderPath, filename -> {
-
             System.out.println("Processing: " + filename);
 
-            String artist;
-            String title;
+            SongMetadata metadata = lyricsService.getOrFetchMetadata(filename);
 
-            // 3. Check if metadata already exists in DB
-            if (!SongRepository.hasMetadata(filename)) {
-
-                System.out.println("No metadata found → calling AI");
-
-                SongMetadata result_metadata = aiService.extractMetadata(filename);
-
-                System.out.println("AI result: Artist:" + result_metadata.getArtist() + "   Title:"+result_metadata.getTitle());
-
-
-
-                // store metadata
-                SongRepository.insertOrUpdate(
-                        filename,
-                        result_metadata.getArtist(),
-                        result_metadata.getTitle()
-                );
-            } else {
-
-                System.out.println("Metadata already exists → loading from DB");
-
-                // optional: you could fetch from DB instead of recomputing
-                artist = null;
-                title = null;
-            }
-
-            // 4. Lyrics stage (future use)
-            List<LyricsProvider> providers = List.of(
-                    new TeksteshqipProvider()
-
-            );
-
-            if (!SongRepository.isDownloaded(filename)) {
-                System.out.println("Lyrics not downloaded yet → ready for next step");
-                String lyrics = null;
-                String usedProvider = null;
-
-                for (LyricsProvider provider : providers) {
-
-                    System.out.println("Trying provider: " + provider.getProviderName());
-
-                    try {
-                        lyrics = provider.getLyrics(artist, title);
-
-                        if (lyrics != null && !lyrics.isEmpty()) {
-                            usedProvider = provider.getProviderName();
-                            break;
-                        }
-
-                    } catch (Exception e) {
-                        System.out.println("Provider failed: " + provider.getProviderName());
-                    }
-                }
-
-                if (lyrics != null && !lyrics.isEmpty()) {
-
-                    SongRepository.saveLyrics(filename, lyrics);
-                    SongRepository.markDownloaded(filename);
-
-                    System.out.println("Lyrics downloaded successfully using: " + usedProvider);
-
-                } else {
-                    System.out.println("All providers failed ❌");
-                }
-
-            } else {
-                System.out.println("Lyrics already downloaded");
-            }
+            lyricsService.downloadLyricsIfNeeded(filename, metadata);
 
             System.out.println("-------------------");
         });
