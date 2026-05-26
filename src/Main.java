@@ -10,17 +10,19 @@ public class Main {
         String folderPath = "/home/eneo/mysoftwarefiles/mytestfiles/Youtube";
 
         FileScanner scanner = new FileScanner();
+
         AIService aiService = new AIService();
         LyricsService lyricsService = new LyricsService(aiService);
-        
+
         scanner.scan(folderPath, filename -> {
             System.out.println("Processing: " + filename);
 
-            SongMetadata metadata = lyricsService.getOrFetchMetadata(filename);
+            SongMetadata metadata = lyricsService.getOrFetchMetadata(folderPath,filename);
 
-            lyricsService.downloadLyricsIfNeeded(filename, metadata);
+           // lyricsService.downloadLyricsIfNeeded(filename, metadata);
 
             System.out.println("-------------------");
         });
     }
+
 }

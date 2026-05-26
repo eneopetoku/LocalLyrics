@@ -4,19 +4,26 @@ public class LyricsService {
 
     private final AIService aiService;
 
-    private final List<LyricsProvider> providers = List.of(
-            new TeksteshqipProvider()
-    );
+  private final List<LyricsProvider> providers = List.of(
+ //           new TeksteshqipProvider()
+   );
 
     public LyricsService(AIService aiService) {
         this.aiService = aiService;
     }
 
-    public SongMetadata getOrFetchMetadata(String filename) {
+    public SongMetadata getOrFetchMetadata(String folderPath, String filename) {
 
         if (!SongRepository.hasMetadata(filename)) {
             System.out.println("No metadata found → calling AI");
-            SongMetadata metadata = aiService.extractMetadata(filename);
+            boolean useEmbeddedTags = false;
+            SongMetadata metadata = getMetadata(
+                    folderPath,
+                    filename,
+                    aiService,
+                    useEmbeddedTags
+            );
+            //SongMetadata metadata = aiService.extractMetadata(filename);
 
             System.out.println("AI result: Artist:" + metadata.getArtist() + "   Title:"+metadata.getTitle());
 
@@ -30,7 +37,7 @@ public class LyricsService {
             return metadata;
         }
 
-        return SongRepository.getMetadata(filename); // better than null
+        return SongRepository.getMetadata(filename);
     }
 
 
@@ -62,4 +69,26 @@ public class LyricsService {
 
         System.out.println("All providers failed ❌");
     }
+
+    private static SongMetadata getMetadata(
+            String folderPath,
+            String fileName,
+            AIService aiService,
+            boolean useEmbeddedTags
+    ) {
+
+        if (useEmbeddedTags) {
+
+            EmbeddedMetadataReader reader = new EmbeddedMetadataReader();
+
+            SongMetadata metadata = reader.getMetadata(folderPath + "/"+fileName);
+
+            if (metadata != null) {
+                return metadata;
+            }
+        }
+
+        return aiService.extractMetadata(fileName);
+    }
+
 }

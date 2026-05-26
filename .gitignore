@@ -8,3 +8,6 @@ target/
 
 # Lyrics output folder
 lyrics/
+
+# A folder to put different files I want to by ignored
+myignorefolder/
