@@ -19,7 +19,7 @@ public class Main {
 
             SongMetadata metadata = lyricsService.getOrFetchMetadata(folderPath,filename);
 
-           // lyricsService.downloadLyricsIfNeeded(filename, metadata);
+           lyricsService.downloadLyricsIfNeeded(filename, metadata);
 
             System.out.println("-------------------");
         });

@@ -5,7 +5,7 @@ public class LyricsService {
     private final AIService aiService;
 
   private final List<LyricsProvider> providers = List.of(
- //           new TeksteshqipProvider()
+            new TeksteshqipProvider()
    );
 
     public LyricsService(AIService aiService) {
