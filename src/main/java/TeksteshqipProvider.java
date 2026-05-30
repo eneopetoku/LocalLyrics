@@ -28,7 +28,7 @@ public class TeksteshqipProvider implements LyricsProvider {
 
         try {
 
-            Connection.Response res = Jsoup.connect(SEARCH_URL + title)
+            Connection.Response res = Jsoup.connect(SEARCH_URL + LyricsValidator.normalize(title))
                     .userAgent("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36")
                     .header("Accept", "application/json, text/javascript, */*; q=0.01")
                     .header("Accept-Language", "en-US,en;q=0.9,al;q=0.8")
@@ -43,10 +43,6 @@ public class TeksteshqipProvider implements LyricsProvider {
                 return null;
             }
 
-            if (res.statusCode() != 200) {
-                System.out.println("Search API blocked: " + res.statusCode());
-                return null;
-            }
 
             // 3. Parse JSON
             JsonNode root = mapper.readTree(res.body());
