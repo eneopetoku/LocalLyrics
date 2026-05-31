@@ -4,7 +4,9 @@ import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-
+import org.jsoup.nodes.*;
+import org.jsoup.select.NodeTraversor;
+import org.jsoup.select.NodeVisitor;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
@@ -58,8 +60,8 @@ public class TeksteshqipProvider implements LyricsProvider {
                 String candidateName = item.get("name").asText();
 
                 double score = LyricsValidator.similarity(
-                        candidateName,
-                        title + " - " + artist
+                        LyricsValidator.normalize(candidateName),
+                        LyricsValidator.normalize(title + " - " + artist)
                 );
 
                 if (score > bestScore) {
@@ -102,6 +104,7 @@ public class TeksteshqipProvider implements LyricsProvider {
 
         // 1. Try common known containers first (TeksteShqip + similar sites)
         String[] selectors = new String[] {
+                "div.clCl1",
                 "div#lyrics",
                 "div.lyrics",
                 "div#songLyrics",
@@ -131,23 +134,39 @@ public class TeksteshqipProvider implements LyricsProvider {
         lyricsElement.select("script, style, nav, header, footer, form, ads, .advertisement").remove();
 
         // 4. Preserve line breaks properly
-        String lyrics = lyricsElement.html()
-                .replaceAll("(?i)<br[^>]*>", "\n")
-                .replaceAll("</p>", "\n")
-                .replaceAll("<p[^>]*>", "\n");
+        StringBuilder sb = new StringBuilder();
 
-        // 5. Strip remaining HTML
-        lyrics = Jsoup.parse(lyrics).text();
+        for (Node node : lyricsElement.childNodes()) {
+            if (node instanceof TextNode) {
+                sb.append(((TextNode) node).text());
+            }
+            else if (node instanceof Element) {
+                Element el = (Element) node;
 
-        // 6. Cleanup formatting
+                String tag = el.tagName();
+
+                if (tag.equals("br")) {
+                    sb.append("\n");
+                } else if (tag.equals("p") || tag.equals("div")) {
+                    sb.append("\n");
+                    sb.append(el.text());
+                    sb.append("\n");
+                } else {
+                    sb.append(el.text());
+                }
+            }
+        }
+
+        String lyrics = sb.toString();
+
+        // 5. Cleanup formatting
         lyrics = lyrics
                 .replaceAll("[ \\t]+", " ")
                 .replaceAll("\\n{3,}", "\n\n")
                 .trim();
 
-        // 7. Basic validation (avoid garbage extraction)
+        // 6. Basic validation (avoid garbage extraction)
         if (lyrics.length() < 30) return null;
-
         return lyrics;
     }
 }
