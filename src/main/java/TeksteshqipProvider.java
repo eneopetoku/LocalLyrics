@@ -27,7 +27,7 @@ public class TeksteshqipProvider implements LyricsProvider {
     public String getLyrics(String artist, String title) {
 
         try {
-           
+
             Connection.Response res = Jsoup.connect(SEARCH_URL + LyricsValidator.normalize(title))
                     .userAgent("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36")
                     .header("Accept", "application/json, text/javascript, */*; q=0.01")
@@ -73,6 +73,9 @@ public class TeksteshqipProvider implements LyricsProvider {
             }
 
             String link = bestItem.get("link").asText();
+
+            // 5. Build song URL
+            String songUrl = BASE_URL + "/" + link;
             // 6. Fetch song page
             Document doc = Jsoup.connect(songUrl)
                     .userAgent("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36")
