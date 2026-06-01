@@ -71,7 +71,37 @@ public class TeksteshqipProvider implements LyricsProvider {
             }
 
             if (bestItem == null || bestScore < 0.8) {
-                return null;
+                boolean additional_logic = false;
+                if(additional_logic){
+                double bestScore_i = 0;
+                for (JsonNode item : items) {
+                    String[] parts = item.get("name").asText().split(" - ", 2);
+
+                    if (parts.length < 2) {
+                        continue;
+                    }
+                    String title_i = parts[0];
+                    String artist_i = parts[1];
+                    double score_title = LyricsValidator.similarity(
+                            LyricsValidator.normalize(title),
+                            LyricsValidator.normalize(title_i));
+
+                    double score_artist = LyricsValidator.similarity(
+                            LyricsValidator.normalize(artist),
+                            LyricsValidator.normalize(artist_i));
+                 //   double score_i=
+                    if((score_title>0.9)&&(score_artist>0.6)){
+                        double score_i=score_title+0.5*score_artist;
+                        if (score_i>bestScore_i){
+                            bestScore_i = score_i;
+                            bestItem = item;
+                        }
+
+                    }
+                }}
+                if (bestItem == null) {
+                    return null;
+                }
             }
 
             String link = bestItem.get("link").asText();
