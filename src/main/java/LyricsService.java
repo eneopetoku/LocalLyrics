@@ -52,6 +52,11 @@ public class LyricsService {
         for (LyricsProvider provider : providers) {
 
             try {
+                System.out.printf(
+                        "Metadata used for download:%nArtist: %s | Title: %s%n",
+                        metadata.getArtist(),
+                        metadata.getTitle()
+                );
                 String lyrics = provider.getLyrics(metadata.getArtist(), metadata.getTitle());
 
                 if (lyrics != null && !lyrics.isEmpty()) {
@@ -59,6 +64,7 @@ public class LyricsService {
                     SongRepository.markDownloaded(filename);
 
                     System.out.println("Lyrics downloaded using: " + provider.getProviderName());
+
                     return;
                 }
 
