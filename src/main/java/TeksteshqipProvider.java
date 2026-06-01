@@ -197,6 +197,8 @@ public class TeksteshqipProvider implements LyricsProvider {
 
         // 6. Basic validation (avoid garbage extraction)
         if (lyrics.length() < 30) return null;
+        if(lyrics.contains("Do ja u dinim shumë për faleminderit në rast se mundeni të na ndihmoni ne dhe të gjithë ata që janë në kërkim të këtij teksti.")){
+          return null;}
         return lyrics;
     }
 }
