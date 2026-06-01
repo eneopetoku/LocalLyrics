@@ -70,10 +70,11 @@ public class TeksteshqipProvider implements LyricsProvider {
                 }
             }
 
-            if (bestItem == null || bestScore < 0.9) {
+            if (bestItem == null || bestScore < 0.8) {
                 boolean additional_logic = false;
-                if(additional_logic){
                 double bestScore_i = 0;
+                if(additional_logic){
+
                 for (JsonNode item : items) {
                     String[] parts = item.get("name").asText().split(" - ", 2);
 
@@ -99,7 +100,7 @@ public class TeksteshqipProvider implements LyricsProvider {
 
                     }
                 }}
-                if (bestItem == null) {
+                if (bestItem == null || bestScore < 0.8 || bestScore_i < 0.9) {
                     return null;
                 }
             }
