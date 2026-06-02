@@ -100,7 +100,7 @@ public class TeksteshqipProvider implements LyricsProvider {
 
                     }
                 }}
-                if (bestItem == null || bestScore < 0.8 || bestScore_i < 0.9) {
+                if (bestItem == null || bestScore_i<0.9) {
                     return null;
                 }
             }
